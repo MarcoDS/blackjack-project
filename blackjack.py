@@ -1,27 +1,42 @@
 from random import shuffle
 
-def shuffle_deck(n):    
-    initial_deck = [r+s for r in '23456789TJQKA' for s in 'SHDC'] * n
-    shuffle(initial_deck)
-    return initial_deck
+class Game():
+	
+	def __init__(self, number_of_decks, number_of_players):
+		self.number_of_decks = number_of_decks
+		self.number_of_players = number_of_players
+		self.current_deck = []
+		self.hands = {}
 
-def deal(game): #make a class
-    game['dealer'] = []
-    game['dealer'].append(game['deck'].pop(0))
-    game['dealer'].append(game['deck'].pop(0))
+	def deal(self): #make a class
+	    self.hands['dealer'] = []
+	    self.hit('dealer')
+	    self.hit('dealer')
 
-    for i in range(1,game['players'] + 1):
-        game['player ' + str(i)] = []
-        game['player ' + str(i)].append(game['deck'].pop(0))
-        game['player ' + str(i)].append(game['deck'].pop(0))
-        print("Player %s your hand is: %s" % (i, game['player ' + str(i)]))
+	    for i in range(1,self.number_of_players + 1):
+	        self.hands['player ' + str(i)] = []
+	        self.hit(str(i))
+	        self.hit(str(i))
+	   
+	    return self.hands
 
-    print("Dealer is showing: %s" % (game['dealer'][0]))
-    return game
+	def hit(self, target): #target should be dealer or player id
+		if target == 'dealer':
+			self.hands[target].append(self.current_deck.pop(0))
+		else:
+			self.hands['player ' + str(target)].append(self.current_deck.pop(0))
+		return self.hands
 
-def start_game(number_of_decks, number_of_players):
-	game = {'deck': shuffle_deck(number_of_decks), 'players': number_of_players} #initialize game with a number of decks shuffled and a number of players
-	return game
+	def print_deal(self): #i see i can replace the default print / look up the syntax
+		for i in range(1,self.number_of_players + 1):
+			print("Player %s your hand is: %s" % (i, self.hands['player ' + str(i)]))
+
+		print("Dealer is showing: %s" % (self.hands['dealer'][0]))
+
+	def shuffle_deck(self):    
+	    self.current_deck = [r+s for r in '23456789TJQKA' for s in 'SHDC'] * self.number_of_decks
+	    shuffle(self.current_deck)
+	    return self.current_deck
 
 def hand_value(hand):
 	value = 0
@@ -46,9 +61,10 @@ print("Everyone starts with 1000$")
 print("Bets are fixed at 50$")
 print("")
 
-game = start_game(6, 1)
-deal(game)
+current_game = Game(6, 1)
+current_game.shuffle_deck()
+current_game.deal()
+current_game.print_deal()
 
 
-#for i in range(1,game['players'] + 1):
 #	decision = input("Player %s will you Hit, Stand or Double ?" % (i))
