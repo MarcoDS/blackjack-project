@@ -1,4 +1,5 @@
 from random import shuffle
+from time import sleep
 
 class Hand():
     def __init__(self):
@@ -91,9 +92,26 @@ print("Welcome to BlackJack.")
 print("Everyone starts with 1000$")
 print("Bets are fixed at 50$")
 print("")
+sleep(1)
 
-game = Game(6, 2)
+number_of_players = 0
+
+while number_of_players < 1 or number_of_players > 8:
+    try:
+        number_of_players = int(raw_input("How many players 1-8? "))
+    except:
+        print("Incorrect input")
+        continue
+    if number_of_players < 1 or number_of_players > 8:
+        print("Incorrect input")
+
+game = Game(6, number_of_players)
+sleep(0.5)
+print("")
+print("")
+print("Shuffling...")
 game.shuffle_deck()
+sleep(1)
 game.deal()
 game.print_deal()
 print("")
@@ -145,6 +163,12 @@ for p in range(1, len(game.players)):
                 print("Incorrect input")
 print("")
 print("")
+sleep(0.5)
+print("All players are done.")
+print("Time for the dealer")
+print("")
+print("")
+sleep(1)
 game.resolve_dealer()
 # game.resolve_bets()
 
