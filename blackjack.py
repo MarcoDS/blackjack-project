@@ -63,6 +63,10 @@ class Game():
         self.deck = []
         self.players = [Player() for i in range(number_of_players + 1)]  # additional player to account for the dealer
 
+    def cleanup(self):
+        for p in range(len(self.players)):
+            self.players[p].hands = [Hand()]
+
     def deal(self):
         """Set up each round by creating starting hands for dealer and each player."""
         for p in list(range(len(self.players))) * 2:
@@ -101,9 +105,11 @@ class Game():
                     print("Player %s busted at %s. Loses %s$, total at %s$" % (p, self.players[p].hands[i].value, self.players[p].hands[i].bet, self.players[p].bankroll))
                 elif self.players[p].hands[i].value > self.players[0].hands[0].value or self.players[0].hands[0].is_busted:
                     if self.players[p].hands[i].is_blackjack:
-                       self.players[p].bankroll += self.players[p].hands[i].bet * 0.5                  
+                       self.players[p].hands[i].bet += int(self.players[p].hands[i].bet * 0.5)                
                     self.players[p].bankroll += self.players[p].hands[i].bet
                     print("Player %s wins at %s. Receives %s$, total at %s$" % (p, self.players[p].hands[i].value, self.players[p].hands[i].bet, self.players[p].bankroll))
+                elif self.players[p].hands[i].value == self.players[0].hands[0].value:
+                    print("Player %s pushes at %s. Receives back initial bet, total at %s$" % (p, self.players[p].hands[i].value, self.players[p].bankroll))
                 else:  # Neither busted, dealer has better hand
                     self.players[p].bankroll -= self.players[p].hands[i].bet
                     print("Player %s lost at %s. Loses %s$, total at %s$" % (p, self.players[p].hands[i].value, self.players[p].hands[i].bet, self.players[p].bankroll))
@@ -135,78 +141,85 @@ print("Shuffling...")
 game.shuffle_deck()
 print("")
 print("")
-
- 
-print("Dealing...")
-game.deal()
-print("")
-print("")
-sleep(1)
-game.print_deal()
-
-for p in range(1, len(game.players)):
+playing = True
+while playing == True:
+    print("Dealing...")
+    game.deal()
     print("")
     print("")
-    print("Player %s" % (p))
-    print("")
-    hands_resolved = 0
-    while hands_resolved < len(game.players[p].hands):
-        i = hands_resolved
-        if len(game.players[p].hands) > 1:
-            print("Hand %s: %s" % ((i+1),game.players[p].hands[i].cards))
+    sleep(1)
+    game.print_deal()
 
-        if game.players[p].hands[i].is_blackjack:
-            print("!!BLACKJACK!! Congratulations..")
-            hands_resolved +=1
+    for p in range(1, len(game.players)):
+        print("")
+        print("")
+        print("Player %s" % (p))
+        print("")
+        hands_resolved = 0
+        while hands_resolved < len(game.players[p].hands):
+            i = hands_resolved
+            if len(game.players[p].hands) > 1:
+                print("Hand %s: %s" % ((i+1),game.players[p].hands[i].cards))
 
-        elif game.players[p].hands[i].value == 21:
-            print("21! Congratulations..")
-            hands_resolved += 1
-            
-        elif game.players[p].hands[i].is_busted:
-            print("Oops, that's a bust...")
-            hands_resolved += 1
-            # Take bet
-        else:            
-            print("Hand value is %s" % (game.players[p].hands[i].value))
-            print("")
-            print("What do you want to do?")
-            if game.players[p].hands[i].splittable():
-                decision = raw_input("[H]it, [S]tand, S[p]lit [D]ouble: ")
-            else:
-                decision = raw_input("[H]it, [S]tand or [D]ouble: ")
-            decision = decision.lower()
+            if game.players[p].hands[i].is_blackjack:
+                print("!!BLACKJACK!! Congratulations..")
+                hands_resolved +=1
 
-            if decision == 'h':  # Hit
-                game.players[p].hands[i].hit(game.draw_card())
-                print("Your current hand is: %s" % (game.players[p].hands[i].cards))
-
-            elif decision == 'd':  # Double
-                game.players[p].hands[i].hit(game.draw_card())
-                game.players[p].hands[i].bet *= 2
-                print("Your final hand is: %s" % (game.players[p].hands[i].cards))
+            elif game.players[p].hands[i].value == 21:
+                print("21! Congratulations..")
                 hands_resolved += 1
-
-            elif decision == 's':  # Stand
+                
+            elif game.players[p].hands[i].is_busted:
+                print("Oops, that's a bust...")
                 hands_resolved += 1
+                # Take bet
+            else:            
+                print("Hand value is %s" % (game.players[p].hands[i].value))
+                print("")
+                print("What do you want to do?")
+                if game.players[p].hands[i].splittable():
+                    decision = raw_input("[H]it, [S]tand, S[p]lit [D]ouble: ")
+                else:
+                    decision = raw_input("[H]it, [S]tand or [D]ouble: ")
+                decision = decision.lower()
 
-            elif decision == 'p' and game.players[p].hands[i].splittable():   # Split
-                game.players[p].split(i)
-            else:
-                print("Incorrect input")
-print("")
-print("")
-sleep(0.5)
-print("All players are done.")
-print("Time for the dealer")
-print("")
-print("")
-sleep(1)
-game.resolve_dealer()
-print("")
-print("")
-sleep(1)
-game.resolve_bets()
-print("")
-print("")
+                if decision == 'h':  # Hit
+                    game.players[p].hands[i].hit(game.draw_card())
+                    print("Your current hand is: %s" % (game.players[p].hands[i].cards))
+
+                elif decision == 'd':  # Double
+                    game.players[p].hands[i].hit(game.draw_card())
+                    game.players[p].hands[i].bet *= 2
+                    print("Your final hand is: %s" % (game.players[p].hands[i].cards))
+                    hands_resolved += 1
+
+                elif decision == 's':  # Stand
+                    hands_resolved += 1
+
+                elif decision == 'p' and game.players[p].hands[i].splittable():   # Split
+                    game.players[p].split(i)
+                else:
+                    print("Incorrect input")
+    print("")
+    print("")
+    sleep(0.5)
+    print("All players are done.")
+    print("Time for the dealer")
+    print("")
+    print("")
+    sleep(1)
+    game.resolve_dealer()
+    print("")
+    print("")
+    sleep(1)
+    game.resolve_bets()
+    print("")
+    print("")
+
+    keep_playing = raw_input("Type 'quit' to stop playing, anything else to keep going:")
+    keep_playing = keep_playing.lower()
+    if keep_playing == "quit":
+        print("Thanks for playing.")
+        playing = False
+    game.cleanup()
 
