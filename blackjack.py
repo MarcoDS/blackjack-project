@@ -56,6 +56,7 @@ class Player():
         self.hands[target].hit(game.draw_card())  #is it ok to call draw_card() like this here 
         self.hands[new_hand].hit(game.draw_card())
 
+
 class Game():
     def __init__(self, number_of_decks, number_of_players):
         self.number_of_decks = number_of_decks
@@ -177,17 +178,19 @@ while playing == True:
                 print("Hand value is %s" % (game.players[p].hands[i].value))
                 print("")
                 print("What do you want to do?")
-                if game.players[p].hands[i].splittable():
+                if game.players[p].hands[i].splittable() and len(game.players[p].hands[i].cards) == 2:
                     decision = raw_input("[H]it, [S]tand, S[p]lit [D]ouble: ")
-                else:
+                elif len(game.players[p].hands[i].cards) == 2:
                     decision = raw_input("[H]it, [S]tand or [D]ouble: ")
+                else:
+                    decision = raw_input("[H]it or [S]tand: ")
                 decision = decision.lower()
 
                 if decision == 'h':  # Hit
                     game.players[p].hands[i].hit(game.draw_card())
                     print("Your current hand is: %s" % (game.players[p].hands[i].cards))
 
-                elif decision == 'd':  # Double
+                elif decision == 'd' and len(game.players[p].hands[i].cards) == 2:  # Double
                     game.players[p].hands[i].hit(game.draw_card())
                     game.players[p].hands[i].bet *= 2
                     print("Your final hand is: %s" % (game.players[p].hands[i].cards))

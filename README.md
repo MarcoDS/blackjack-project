@@ -6,3 +6,5 @@ Remaining Todo:
 - allow to select number of decks
 - allow to select custom bets and starting bankroll
 - optimize 
+- do not let the dealer play if everyone busted
+- implement symbols for suits
