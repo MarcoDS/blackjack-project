@@ -10,6 +10,7 @@ class Hand():
         """Add a card from top of the deck to target hand."""
         self.cards.append(card)
         self.compute_value()
+        return card
 
     def compute_value(self):
         """Return numeric value of said hand."""
@@ -72,22 +73,36 @@ class Game():
         self.deck = [r+s for r in '23456789TJQKA' for s in 'SHDC'] * self.number_of_decks
         shuffle(self.deck)
 
+    def resolve_dealer(self):
+        print("Dealer's hand is: %s for %s" % (self.players[0].hands[0].cards, self.players[0].hands[0].value))
+        while self.players[0].hands[0].value < 17:
+            print("Dealer hits a %s" % (self.players[0].hands[0].hit(game.draw_card())))
+        
+        if self.players[0].hands[0].value < 22:
+            print("Dealer stays with: %s for %s" % (self.players[0].hands[0].cards, self.players[0].hands[0].value))
+        else:
+            print("Dealer busts with: %s for %s" % (self.players[0].hands[0].cards, self.players[0].hands[0].value))
+
+    def resolve_bets(self):
+        pass
+
 
 print("Welcome to BlackJack.")
 print("Everyone starts with 1000$")
 print("Bets are fixed at 50$")
 print("")
 
-game = Game(6, 4)
+game = Game(6, 2)
 game.shuffle_deck()
 game.deal()
 game.print_deal()
-print("...")
-print("...")
+print("")
 
 for p in range(1, len(game.players)):
     print("")
+    print("")
     print("Player %s" % (p))
+    print("")
     hands_resolved = 0
     while hands_resolved < len(game.players[p].hands):
         i = hands_resolved
@@ -107,6 +122,7 @@ for p in range(1, len(game.players)):
             # Take bet
         else:            
             print("Hand value is %s" % (game.players[p].hands[i].value))
+            print("")
             print("What do you want to do?")
             if game.players[p].hands[i].splittable():
                 decision = raw_input("[H]it, [S]tand, S[p]lit [D]ouble: ")
@@ -127,4 +143,8 @@ for p in range(1, len(game.players)):
                 game.players[p].split(i)
             else:
                 print("Incorrect input")
+print("")
+print("")
+game.resolve_dealer()
+# game.resolve_bets()
 
