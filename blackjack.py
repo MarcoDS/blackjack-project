@@ -126,7 +126,7 @@ number_of_players = 0
 
 while number_of_players < 1 or number_of_players > 8:
     try:
-        number_of_players = int(raw_input("How many players 1-8? "))
+        number_of_players = int(input("How many players 1-8? "))
     except:
         print("Incorrect input")
         continue
@@ -179,11 +179,11 @@ while playing == True:
                 print("")
                 print("What do you want to do?")
                 if game.players[p].hands[i].splittable() and len(game.players[p].hands[i].cards) == 2:
-                    decision = raw_input("[H]it, [S]tand, S[p]lit [D]ouble: ")
+                    decision = input("[H]it, [S]tand, S[p]lit [D]ouble: ")
                 elif len(game.players[p].hands[i].cards) == 2:
-                    decision = raw_input("[H]it, [S]tand or [D]ouble: ")
+                    decision = input("[H]it, [S]tand or [D]ouble: ")
                 else:
-                    decision = raw_input("[H]it or [S]tand: ")
+                    decision = input("[H]it or [S]tand: ")
                 decision = decision.lower()
 
                 if decision == 'h':  # Hit
@@ -219,7 +219,7 @@ while playing == True:
     print("")
     print("")
 
-    keep_playing = raw_input("Type 'quit' to stop playing, anything else to keep going:")
+    keep_playing = input("Type 'quit' to stop playing, anything else to keep going:")
     keep_playing = keep_playing.lower()
     if keep_playing == "quit":
         print("Thanks for playing.")
